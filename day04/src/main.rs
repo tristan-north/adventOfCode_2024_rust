@@ -1,4 +1,9 @@
 fn main() {
+    part_one();
+    part_two();
+}
+
+fn part_one() {
     let input = std::fs::read_to_string("input.txt").expect("Couldn't read input.");
 
     let input_lines = input.lines().collect::<Vec<&str>>();
@@ -87,4 +92,52 @@ fn get_num_xmas_occurances(line: &str) -> u32 {
     accum += line.matches("SAMX").count();
 
     accum as u32
+}
+
+// ---- Part Two ----
+
+fn part_two() {
+    let input = std::fs::read_to_string("input.txt").expect("Couldn't read input.");
+
+    let grid: Vec<Vec<char>> = input.lines().map(|line| line.chars().collect()).collect();
+
+    let mut solution_accum = 0;
+    for y in 0..grid.len() - 2 {
+        for x in 0..grid.len() - 2 {
+            solution_accum += check_for_match(&grid, (x, y));
+        }
+    }
+
+    println!("Part Two solution: {solution_accum}");
+}
+
+fn check_for_match(grid: &Vec<Vec<char>>, coord: (usize, usize)) -> u32 {
+    let config_a = [['M', '.', 'M'], ['.', 'A', '.'], ['S', '.', 'S']];
+    let config_b = [['S', '.', 'S'], ['.', 'A', '.'], ['M', '.', 'M']];
+    let config_c = [['M', '.', 'S'], ['.', 'A', '.'], ['M', '.', 'S']];
+    let config_d = [['S', '.', 'M'], ['.', 'A', '.'], ['S', '.', 'M']];
+    let configs = [config_a, config_b, config_c, config_d];
+
+    for config in configs {
+        let mut is_match = true;
+        for x in 0..3 {
+            for y in 0..3 {
+                let config_val = config[y][x];
+                if config_val == '.' {
+                    continue;
+                }
+
+                let grid_val = grid[(coord.1 + x) as usize][(coord.0 + y) as usize];
+                if grid_val != config_val {
+                    is_match = false;
+                    break;
+                }
+            }
+        }
+        if is_match {
+            return 1;
+        }
+    }
+
+    0
 }
